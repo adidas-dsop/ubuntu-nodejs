@@ -1,0 +1,45 @@
+#!/bin/bash -e
+
+cd $1
+BASE=$(pwd)
+
+NAME=$(jq -r '.name' package.json)
+NAME="dsad-${NAME}"
+VERSION=$(jq -r '.version' package.json)
+AUTHOR=$(jq -r '.author' package.json)
+DESCRIPTION=$(jq -r '.description' package.json)
+if [ -z ${DESCRIPTION} ] ; then
+  DESCRIPTION="no description"
+fi
+DATE=$(date -R)
+
+figlet -w 1000 "build ${NAME} ${VERSION}"
+
+export DEB_SOURCE="/DEB_SOURCE"
+rm -rf ${DEB_SOURCE}
+mkdir -p ${DEB_SOURCE}/DEBIAN
+mkdir -p ${DEB_SOURCE}/$1
+
+rsync -a --exclude=node_modules ./* ${DEB_SOURCE}/$1
+cd ${DEB_SOURCE}/$1
+# npm install
+
+mkdir -p ${DEB_SOURCE}/etc/init
+ln -s /$1/upstart ${DEB_SOURCE}/etc/init/${NAME}.conf
+
+FILE="${DEB_SOURCE}/DEBIAN/control"
+echo "create ${FILE}"
+echo "Package: ${NAME}" > ${FILE}
+echo "Version: ${VERSION}" >> ${FILE}
+echo "Section: dsad" >>  ${FILE}
+echo "Priority: optional" >> ${FILE}
+echo "Maintainer: ${AUTHOR}" >> ${FILE}
+echo "Architecture: all" >> ${FILE}
+echo "Description: ${DESCRIPTION}" >> ${FILE}
+
+mkdir -p /build
+TARGET_DEB="/build/${NAME}_${VERSION}_all.deb"
+chown -R root:root ${DEB_SOURCE}
+dpkg-deb -b ${DEB_SOURCE}
+mv ${DEB_SOURCE}.deb ${TARGET_DEB}
+echo "${TARGET_DEB} created"
