@@ -22,7 +22,7 @@ mkdir -p ${DEB_SOURCE}/$1
 
 rsync -a --exclude=node_modules ./* ${DEB_SOURCE}/$1
 cd ${DEB_SOURCE}/$1
-# npm install
+npm install
 
 mkdir -p ${DEB_SOURCE}/etc/init
 ln -s /$1/upstart ${DEB_SOURCE}/etc/init/${NAME}.conf
