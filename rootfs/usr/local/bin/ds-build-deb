@@ -24,6 +24,15 @@ rsync -a --exclude=node_modules ./* ${DEB_SOURCE}/$1
 cd ${DEB_SOURCE}/$1
 npm install
 
+#
+# Workarround for shared-lib
+#
+if [ -d /compass-shared ] ; then
+    cd /compass-shared
+    npm install
+    cp -r /compass-shared ${DEB_SOURCE}/$1/node_modules
+fi 
+
 mkdir -p ${DEB_SOURCE}/etc/init
 ln -s /$1/upstart ${DEB_SOURCE}/etc/init/${NAME}.conf
 

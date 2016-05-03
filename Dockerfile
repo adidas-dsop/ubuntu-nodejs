@@ -37,4 +37,8 @@ RUN wget -qO- https://deb.nodesource.com/setup_4.x | bash - && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+RUN curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+RUN unzip awscli-bundle.zip
+RUN ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+
 ADD rootfs /
