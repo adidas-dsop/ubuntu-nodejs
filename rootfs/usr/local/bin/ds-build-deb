@@ -23,6 +23,7 @@ mkdir -p ${DEB_SOURCE}/$1
 rsync -a --exclude=node_modules ./* ${DEB_SOURCE}/$1
 cd ${DEB_SOURCE}/$1
 npm install
+npm run test
 
 #
 # Workarround for shared-lib
@@ -30,6 +31,7 @@ npm install
 if [ -d /compass-shared ] ; then
     cd /compass-shared
     npm install
+    npm run test
     cp -r /compass-shared ${DEB_SOURCE}/$1/node_modules
 fi 
 
